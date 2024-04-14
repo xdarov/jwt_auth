@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16.2-alpine3.19
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: strongpassword
+    ports:
+    - "45432:5432"
+    hostname: postgres-db 
+
+  authentication:
+    depends_on:
+     - db
+    build:
+      context: authentication/
+      dockerfile: Dockerfile
+    ports:
+      - "48100:8000"
+    environment:
+      POSTGRES_HOST: postgres-db
+      POSTGRES_PORT: 5432
+      POSTGRES_PASSWORD: strongpassword
+    hostname: authentication 
+
+  front:
+    depends_on:
+     - db
+     - authentication
+    build:
+      context: front/
+      dockerfile: Dockerfile
+    ports:
+      - "48000:8000"
+    environment:
+      AUTH_HOST: authentication
+      AUTH_PORT: 8000

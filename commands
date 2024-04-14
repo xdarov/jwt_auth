@@ -1,0 +1,5 @@
+all
+docker build -t postgres .
+docker run -d -p 45432:45432 --name postgres postgres
+
+uvicorn app:app --reload
